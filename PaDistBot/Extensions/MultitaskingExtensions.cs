@@ -26,8 +26,6 @@ namespace PaDistBot.Extensions
         public static async Task<List<T2>> Parallel<T, T2>(this IReadOnlyList<T> inputs, int threads, Func<T, Task<T2>> work, bool resume = true)
         {
             var outputs = new List<T2>();
-            if (resume)
-                PrepareResume(ref inputs, ref outputs);
             var isString = inputs.First() is string;
             var name = typeof(T).Name;
             if (name == "String")
@@ -94,8 +92,6 @@ namespace PaDistBot.Extensions
         public static async Task<List<T2>> Parallel<T, T2>(this IReadOnlyList<T> inputs, int threads, Func<T, Task<List<T2>>> work, bool resume = true)
         {
             var outputs = new List<T2>();
-            if (resume)
-                PrepareResume(ref inputs, ref outputs);
             var isString = inputs.First() is string;
             var name = typeof(T).Name;
             if (name == "String")

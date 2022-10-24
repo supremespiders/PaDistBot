@@ -7,13 +7,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using PaDistBot.Models;
 
 namespace PaDistBot.Services
 {
     public class Scraper
     {
         private readonly HttpClient _client;
-        private List<HttpClient> _clients;
         private int _idx;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly int _threads;
@@ -24,69 +24,51 @@ namespace PaDistBot.Services
             _threads = threads;
             _client = new HttpClient(new HttpClientHandler()
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                UseCookies = false
             });
-            if (File.Exists("proxies.txt"))
+            _client.DefaultRequestHeaders.Add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            _client.DefaultRequestHeaders.Add("cookie","DevicePreferences=DefaultBasketGuid=dc842e6d-8461-4089-83ea-a15cd0e6c79a; __stripe_mid=64b729e8-b40d-43b4-8882-17d64f56e25d4b18ef; __stripe_sid=8e970dbb-f74a-4a9c-9572-7e74d52ac34360281a; WebLogin=Guid=ee588a0e-1586-421c-8a3c-5e23c31a854d&Salt=izG4t4WkQnCe5tGyrgZxj1LlRuBhcozy");
+        }
+
+        async Task Login()
+        {
+            var doc=await _client.PostFormData("https://pa-dist.com/SignIn/Process/Post", new Dictionary<string, string>()
             {
-                InitClientProxies();
-                _clients.Add(_client); //add your ip to proxies
-            }
+                { "step", "1" },
+                { "RedirectUrl", "/" },
+                { "step1u", "alan@cameowaterwear.com" },
+                { "step1p", "Parker303" },
+            }).ToDoc();
+
+           // doc = await _client.GetHtml("https://pa-dist.com/Profile/Edit").ToDoc();
+            // doc.Save("html.html");
+            // Process.Start("html.html");
         }
 
-        private void InitClientProxies()
+        public async Task<Item> GetDetails(string url)
         {
-            _clients = new List<HttpClient>();
-            var proxies = File.ReadAllLines("proxies.txt");
-            foreach (var p in proxies)
-            {
-                var pp = p.Split(':');
-                var proxy = new WebProxy($"{pp[0]}:{pp[1]}", true)
-                {
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(pp[2], pp[3]),
-                };
-                _clients.Add(new HttpClient(new HttpClientHandler()
-                {
-                    Proxy = proxy,
-                    UseCookies = false,
-                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                }));
-            }
+            var doc = await _client.GetHtml(url).ToDoc();
+            // doc.Save("x.html");
+            // Process.Start("x.html");
+            var img = doc.DocumentNode.SelectSingleNode("//img[@src='https://cdn.pa-dist.com/item/v3s/328276-1']").GetAttributeValue("src","");
+            return new Item() { Url = url, Img = img };
         }
-
-        async Task<HttpClient> GetNextClient()
-        {
-            if (!_userProxies) return _client;
-            await _semaphore.WaitAsync();
-            var client = _clients[_idx];
-            _idx++;
-            if (_idx == _clients.Count)
-                _idx = 0;
-            _semaphore.Release();
-            return client;
-        }
-
-        async Task<string> Work(string url)
-        {
-            var client = await GetNextClient();
-            var doc = await client.GetHtml(url).ToDoc();
-            return url;
-        }
-
-        private
 
         public async Task MainWork(CancellationToken ct)
         {
             Notifier.Display("Started working");
+            var urls = new List<string>();
+            for (int i = 0; i < 1000; i++)
+            {
+                urls.Add("https://pa-dist.com/Item/328276");
+            }
+
+            var items = await urls.Parallel(30, GetDetails);
             //var urls = new List<string> { "a", "b" };
             //var results = await urls.Parallel(_threads, Work);
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://pa-dist.com/SignIn/Process/Post");
-            request.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
-            var response = await _client.SendAsync(request);
-            var bytes = await response.Content.ReadAsByteArrayAsync();
-            var html = Encoding.UTF8.GetString(bytes);
-            File.WriteAllText("html.html",html);
-            Process.Start("html.html");
+
+          //  await Login();
             Notifier.Display("Completed working");
         }
     }
