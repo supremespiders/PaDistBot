@@ -31,6 +31,7 @@ namespace PaDistBot.Services
             _client.DefaultRequestHeaders.Add("cookie","DevicePreferences=DefaultBasketGuid=dc842e6d-8461-4089-83ea-a15cd0e6c79a; __stripe_mid=64b729e8-b40d-43b4-8882-17d64f56e25d4b18ef; __stripe_sid=8e970dbb-f74a-4a9c-9572-7e74d52ac34360281a; WebLogin=Guid=ee588a0e-1586-421c-8a3c-5e23c31a854d&Salt=izG4t4WkQnCe5tGyrgZxj1LlRuBhcozy");
         }
 
+        //didn't work out of the box, it needed more work, or we just use selenium for this
         async Task Login()
         {
             var doc=await _client.PostFormData("https://pa-dist.com/SignIn/Process/Post", new Dictionary<string, string>()
@@ -42,15 +43,18 @@ namespace PaDistBot.Services
             }).ToDoc();
 
            // doc = await _client.GetHtml("https://pa-dist.com/Profile/Edit").ToDoc();
-            // doc.Save("html.html");
-            // Process.Start("html.html");
+            doc.Save("login.html");
+            Process.Start("login.html");
         }
 
+        /// <summary>
+        /// This is the main function to put the xpaths and pull details of item then return the item
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public async Task<Item> GetDetails(string url)
         {
             var doc = await _client.GetHtml(url).ToDoc();
-            // doc.Save("x.html");
-            // Process.Start("x.html");
             var img = doc.DocumentNode.SelectSingleNode("//img[@src='https://cdn.pa-dist.com/item/v3s/328276-1']").GetAttributeValue("src","");
             return new Item() { Url = url, Img = img };
         }
@@ -64,11 +68,8 @@ namespace PaDistBot.Services
                 urls.Add("https://pa-dist.com/Item/328276");
             }
 
-            var items = await urls.Parallel(30, GetDetails);
-            //var urls = new List<string> { "a", "b" };
-            //var results = await urls.Parallel(_threads, Work);
-
-          //  await Login();
+            var items = await urls.Parallel(30, GetDetails); //this line to start multi tasking
+            items.Save(); //this save the result items to json to persist it (not needed , later you just put to excel )
             Notifier.Display("Completed working");
         }
     }
