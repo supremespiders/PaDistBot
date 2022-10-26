@@ -14,23 +14,47 @@ using OpenQA.Selenium;
 using System.Security.Policy;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 
 namespace PaDistBot.Services
 {
     public class Scraper
     {
-        private readonly HttpClient _client;
+        private  HttpClient _client;
         private int _idx;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly int _threads;
         private bool _userProxies = false;
         private ChromeDriver _driver;
-        private string _userName = "alan@cameowaterwear.com";
-        private string _password = "Parker303";
+        private string _userName; //= "alan@cameowaterwear.com";
+        private string _password; //= "Parker303";
+        private string _inputFile;
 
-        public Scraper(int threads)
+        public Scraper(int threads, string userName, string password, string inputFile)
         {
-            
+            _threads = threads;
+            _userName = userName;
+            _password = password;
+            _inputFile = inputFile;
+            //_client.DefaultRequestHeaders.Add("cookie","DevicePreferences=DefaultBasketGuid=dc842e6d-8461-4089-83ea-a15cd0e6c79a; __stripe_mid=64b729e8-b40d-43b4-8882-17d64f56e25d4b18ef; __stripe_sid=8e970dbb-f74a-4a9c-9572-7e74d52ac34360281a; WebLogin=Guid=ee588a0e-1586-421c-8a3c-5e23c31a854d&Salt=izG4t4WkQnCe5tGyrgZxj1LlRuBhcozy");
+        }
+
+        private void InitClient()
+        {
+            var cookies = "";
+            if (File.Exists("ses.txt"))
+                cookies = File.ReadAllText("ses.txt");
+            _client = new HttpClient(new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                UseCookies = false
+            });
+            _client.DefaultRequestHeaders.Add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            _client.DefaultRequestHeaders.Add("cookie", cookies);
+        }
+
+        private void Login()
+        {
             var chromeDriverService = ChromeDriverService.CreateDefaultService();
             var chromeOptions = new ChromeOptions();
             chromeDriverService.HideCommandPromptWindow = true;
@@ -49,23 +73,10 @@ namespace PaDistBot.Services
                 cookieBiulde.Append(cookie.Name + "=" + cookie.Value + ";");
             }
             _driver.Quit();
-            cookieBiulde.Length--;
-            var cookies = cookieBiulde.ToString();
-            Console.WriteLine("-->  " + cookies);
-
-            _threads = threads;
-            _client = new HttpClient(new HttpClientHandler()
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                UseCookies = false
-            });
-            _client.DefaultRequestHeaders.Add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
-            _client.DefaultRequestHeaders.Add("cookie", cookies);
-            //_client.DefaultRequestHeaders.Add("cookie","DevicePreferences=DefaultBasketGuid=dc842e6d-8461-4089-83ea-a15cd0e6c79a; __stripe_mid=64b729e8-b40d-43b4-8882-17d64f56e25d4b18ef; __stripe_sid=8e970dbb-f74a-4a9c-9572-7e74d52ac34360281a; WebLogin=Guid=ee588a0e-1586-421c-8a3c-5e23c31a854d&Salt=izG4t4WkQnCe5tGyrgZxj1LlRuBhcozy");
+          File.WriteAllText("ses.txt",cookieBiulde.ToString());
         }
-
         //didn't work out of the box, it needed more work, or we just use selenium for this
-        async Task Login()
+        async Task LoginHttpClient()
         {
             
             var doc =await _client.PostFormData("https://pa-dist.com/SignIn/Process/Post", new Dictionary<string, string>()
@@ -92,22 +103,23 @@ namespace PaDistBot.Services
             var urlImgList = new List<string>();
             //var img = doc.DocumentNode.SelectSingleNode("//img[@src='https://cdn.pa-dist.com/item/v3s/328276-1']")?.GetAttributeValue("src","");
          
-            if (doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img").Count > 0)
-            {
-                foreach (var item in doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img"))
-                {
-                    urlImgList.Add(item.GetAttributeValue("src", ""));
-                }
-            }
-            else urlImgList.Add("no image");
+            // if (doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img").Count > 0)
+            // {
+            //     foreach (var item in doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img"))
+            //     {
+            //         urlImgList.Add(item.GetAttributeValue("src", ""));
+            //     }
+            // }
+            // else urlImgList.Add("no image");
 
+            var img = doc.DocumentNode.SelectSingleNode("//div[@class='PortraitPhotos']//img")?.GetAttributeValue("src", "");
             var price = doc.DocumentNode.SelectSingleNode("//item-price-panel//tbody//td[2]")?.InnerText;
-            var retailPrice = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'Retail Price')]/following-sibling::div").InnerText;
-            var upc = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'UPC')]/following-sibling::div").InnerText;
-            var vendor = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'Vendor Item #')]/following-sibling::div").InnerText;
-            var pa = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'PA Item #')]/following-sibling::div").InnerText;
-            var description = doc.DocumentNode.SelectSingleNode("//item-name-panel//item-description").InnerText;
-            return new Item() { Url = url, Img = urlImgList, Price = price, RetailPrice = retailPrice, Upc = upc, Vendor = vendor, Pa = pa, Description = description };
+            var retailPrice = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'Retail Price')]/following-sibling::div")?.InnerText;
+            var upc = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'UPC')]/following-sibling::div")?.InnerText;
+            var vendor = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'Vendor Item #')]/following-sibling::div")?.InnerText;
+            var pa = doc.DocumentNode.SelectSingleNode("//label[contains(text(),'PA Item #')]/following-sibling::div")?.InnerText;
+            var description = doc.DocumentNode.SelectSingleNode("//item-name-panel//item-description")?.InnerText;
+            return new Item() { Url = url, Img = img, Price = price, RetailPrice = retailPrice, Upc = upc, Vendor = vendor, Pa = pa, Description = description };
         }
 
         public async Task<List<string>> GetUrlItems(string urlCategorie)
@@ -125,38 +137,46 @@ namespace PaDistBot.Services
             return urlItemsList;
         }
 
+        private async Task<List<string>> GetCategoryLinks(string categoryUrl)
+        {
+            Notifier.Display($"Working on category : {categoryUrl}");
+            var doc = await _client.GetHtml(categoryUrl.Replace("&rpp=200","&rpp=1")).ToDoc();
+            var itemCountString = doc.DocumentNode.SelectSingleNode("//div[@class='ItemCounts']").InnerText
+                .GetStringBetween("of","Total Items").Replace(",","").Trim();
+            var itemCount = int.Parse(itemCountString);
+            var pages = itemCount / 100;
+            if (itemCount % 100 != 0) pages++;
+            var pageUrls = new List<string>();
+            for (int i = 1; i <= pages; i++) 
+                pageUrls.Add(categoryUrl.Replace("&rpp=200", "&rpp=100") + "&pg=" + i);
+
+            var allUrls = await pageUrls.Parallel(_threads, GetUrlItems);
+            return allUrls;
+        }
+
+        private async Task MakeSureWeAreLoggedIn()
+        {
+            var doc = await _client.GetHtml("dslkfns").ToDoc();
+            if (doc.DocumentNode.SelectSingleNode("klfs") == null)
+            {
+                await Task.Run(Login);
+                InitClient();
+            }
+        }
         public async Task MainWork(CancellationToken ct)
         {
             Notifier.Display("Started working");
-            var allUrlList = new List<string>();
-           
-            for (int i = 1; i < 6; i++)
+            InitClient();
+            await MakeSureWeAreLoggedIn();
+            var inputs = File.ReadAllLines(_inputFile).ToList();
+            var allUrls = new List<string>();
+            foreach (var input in inputs)
             {
-                Console.WriteLine("Page number " + i);
-                try
-                {
-                    
-                    var urls = await GetUrlItems("https://pa-dist.com/sr?f=1:13530&pg=" + i + "&rpp=200&sort=8&sid=365907");
-                    allUrlList.AddRange(urls);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception: " +ex);
-                    //allUrlList.Add("Exception");
-                    allUrlList.Save();
-                }
-
+                var urls = await GetCategoryLinks(input);
+                allUrls.AddRange(urls);
             }
-            //foreach (var item in urls)
-            //{
-
-            //}
-            //var urls = new List<string>();
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    urls.Add("https://pa-dist.com/Item/328276");
-            //} 
-            var items = await allUrlList.Parallel(30, GetDetails); //this line to start multi tasking
+           // allUrls.Save();
+            var items = await allUrls.Parallel(_threads, GetDetails); //this line to start multi tasking
             items.Save(); //this save the result items to json to persist it (not needed , later you just put to excel )
             Notifier.Display("Completed working");
 

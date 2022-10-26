@@ -37,8 +37,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
             this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.passwordLabel = new MetroFramework.Controls.MetroTextBox();
-            this.userNameLabel = new MetroFramework.Controls.MetroTextBox();
+            this.passwordLabelI = new MetroFramework.Controls.MetroTextBox();
+            this.userNameLabelI = new MetroFramework.Controls.MetroTextBox();
             this.logToFileI = new MetroFramework.Controls.MetroCheckBox();
             this.logToUII = new MetroFramework.Controls.MetroCheckBox();
             this.openOutputB = new MetroFramework.Controls.MetroButton();
@@ -141,8 +141,8 @@
             this.panel2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.panel2.Controls.Add(this.metroLabel2);
             this.panel2.Controls.Add(this.metroLabel1);
-            this.panel2.Controls.Add(this.passwordLabel);
-            this.panel2.Controls.Add(this.userNameLabel);
+            this.panel2.Controls.Add(this.passwordLabelI);
+            this.panel2.Controls.Add(this.userNameLabelI);
             this.panel2.Controls.Add(this.logToFileI);
             this.panel2.Controls.Add(this.logToUII);
             this.panel2.Controls.Add(this.openOutputB);
@@ -179,77 +179,75 @@
             this.metroLabel1.TabIndex = 30;
             this.metroLabel1.Text = "Email or Customer";
             // 
-            // passwordLabel
+            // passwordLabelI
             // 
             // 
             // 
             // 
-            this.passwordLabel.CustomButton.Image = null;
-            this.passwordLabel.CustomButton.Location = new System.Drawing.Point(358, 2);
-            this.passwordLabel.CustomButton.Margin = new System.Windows.Forms.Padding(5);
-            this.passwordLabel.CustomButton.Name = "";
-            this.passwordLabel.CustomButton.Size = new System.Drawing.Size(23, 23);
-            this.passwordLabel.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.passwordLabel.CustomButton.TabIndex = 1;
-            this.passwordLabel.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.passwordLabel.CustomButton.UseSelectable = true;
-            this.passwordLabel.CustomButton.Visible = false;
-            this.passwordLabel.Lines = new string[] {
-        "Parker303"};
-            this.passwordLabel.Location = new System.Drawing.Point(220, 168);
-            this.passwordLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.passwordLabel.MaxLength = 32767;
-            this.passwordLabel.Name = "passwordLabel";
-            this.passwordLabel.PasswordChar = '*';
-            this.passwordLabel.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.passwordLabel.SelectedText = "";
-            this.passwordLabel.SelectionLength = 0;
-            this.passwordLabel.SelectionStart = 0;
-            this.passwordLabel.ShortcutsEnabled = true;
-            this.passwordLabel.Size = new System.Drawing.Size(384, 28);
-            this.passwordLabel.Style = MetroFramework.MetroColorStyle.Orange;
-            this.passwordLabel.TabIndex = 29;
-            this.passwordLabel.Text = "Parker303";
-            this.passwordLabel.UseSelectable = true;
-            this.passwordLabel.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.passwordLabel.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            this.passwordLabel.Click += new System.EventHandler(this.passwordLabel_Click);
+            this.passwordLabelI.CustomButton.Image = null;
+            this.passwordLabelI.CustomButton.Location = new System.Drawing.Point(358, 2);
+            this.passwordLabelI.CustomButton.Margin = new System.Windows.Forms.Padding(5);
+            this.passwordLabelI.CustomButton.Name = "";
+            this.passwordLabelI.CustomButton.Size = new System.Drawing.Size(23, 23);
+            this.passwordLabelI.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
+            this.passwordLabelI.CustomButton.TabIndex = 1;
+            this.passwordLabelI.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.passwordLabelI.CustomButton.UseSelectable = true;
+            this.passwordLabelI.CustomButton.Visible = false;
+            this.passwordLabelI.Lines = new string[] { "Parker303" };
+            this.passwordLabelI.Location = new System.Drawing.Point(220, 168);
+            this.passwordLabelI.Margin = new System.Windows.Forms.Padding(4);
+            this.passwordLabelI.MaxLength = 32767;
+            this.passwordLabelI.Name = "passwordLabelI";
+            this.passwordLabelI.PasswordChar = '*';
+            this.passwordLabelI.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.passwordLabelI.SelectedText = "";
+            this.passwordLabelI.SelectionLength = 0;
+            this.passwordLabelI.SelectionStart = 0;
+            this.passwordLabelI.ShortcutsEnabled = true;
+            this.passwordLabelI.Size = new System.Drawing.Size(384, 28);
+            this.passwordLabelI.Style = MetroFramework.MetroColorStyle.Orange;
+            this.passwordLabelI.TabIndex = 29;
+            this.passwordLabelI.Text = "Parker303";
+            this.passwordLabelI.UseSelectable = true;
+            this.passwordLabelI.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            this.passwordLabelI.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
+            this.passwordLabelI.Click += new System.EventHandler(this.passwordLabel_Click);
             // 
-            // userNameLabel
-            // 
+            // userNameLabelI
             // 
             // 
             // 
-            this.userNameLabel.CustomButton.Image = null;
-            this.userNameLabel.CustomButton.Location = new System.Drawing.Point(358, 2);
-            this.userNameLabel.CustomButton.Margin = new System.Windows.Forms.Padding(5);
-            this.userNameLabel.CustomButton.Name = "";
-            this.userNameLabel.CustomButton.Size = new System.Drawing.Size(23, 23);
-            this.userNameLabel.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.userNameLabel.CustomButton.TabIndex = 1;
-            this.userNameLabel.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.userNameLabel.CustomButton.UseSelectable = true;
-            this.userNameLabel.CustomButton.Visible = false;
-            this.userNameLabel.Lines = new string[] {
-        "alan@cameowaterwear.com"};
-            this.userNameLabel.Location = new System.Drawing.Point(220, 107);
-            this.userNameLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.userNameLabel.MaxLength = 32767;
-            this.userNameLabel.Name = "userNameLabel";
-            this.userNameLabel.PasswordChar = '\0';
-            this.userNameLabel.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.userNameLabel.SelectedText = "";
-            this.userNameLabel.SelectionLength = 0;
-            this.userNameLabel.SelectionStart = 0;
-            this.userNameLabel.ShortcutsEnabled = true;
-            this.userNameLabel.Size = new System.Drawing.Size(384, 28);
-            this.userNameLabel.Style = MetroFramework.MetroColorStyle.Orange;
-            this.userNameLabel.TabIndex = 28;
-            this.userNameLabel.Text = "alan@cameowaterwear.com";
-            this.userNameLabel.UseSelectable = true;
-            this.userNameLabel.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.userNameLabel.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            this.userNameLabel.Click += new System.EventHandler(this.metroTextBox1_Click);
+            // 
+            this.userNameLabelI.CustomButton.Image = null;
+            this.userNameLabelI.CustomButton.Location = new System.Drawing.Point(358, 2);
+            this.userNameLabelI.CustomButton.Margin = new System.Windows.Forms.Padding(5);
+            this.userNameLabelI.CustomButton.Name = "";
+            this.userNameLabelI.CustomButton.Size = new System.Drawing.Size(23, 23);
+            this.userNameLabelI.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
+            this.userNameLabelI.CustomButton.TabIndex = 1;
+            this.userNameLabelI.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.userNameLabelI.CustomButton.UseSelectable = true;
+            this.userNameLabelI.CustomButton.Visible = false;
+            this.userNameLabelI.Lines = new string[] { "alan@cameowaterwear.com" };
+            this.userNameLabelI.Location = new System.Drawing.Point(220, 107);
+            this.userNameLabelI.Margin = new System.Windows.Forms.Padding(4);
+            this.userNameLabelI.MaxLength = 32767;
+            this.userNameLabelI.Name = "userNameLabelI";
+            this.userNameLabelI.PasswordChar = '\0';
+            this.userNameLabelI.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.userNameLabelI.SelectedText = "";
+            this.userNameLabelI.SelectionLength = 0;
+            this.userNameLabelI.SelectionStart = 0;
+            this.userNameLabelI.ShortcutsEnabled = true;
+            this.userNameLabelI.Size = new System.Drawing.Size(384, 28);
+            this.userNameLabelI.Style = MetroFramework.MetroColorStyle.Orange;
+            this.userNameLabelI.TabIndex = 28;
+            this.userNameLabelI.Text = "alan@cameowaterwear.com";
+            this.userNameLabelI.UseSelectable = true;
+            this.userNameLabelI.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            this.userNameLabelI.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
+            this.userNameLabelI.Click += new System.EventHandler(this.metroTextBox1_Click);
             // 
             // logToFileI
             // 
@@ -410,24 +408,12 @@
             this.threadsI.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.threadsI.Location = new System.Drawing.Point(220, 47);
             this.threadsI.Margin = new System.Windows.Forms.Padding(4);
-            this.threadsI.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.threadsI.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.threadsI.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            this.threadsI.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.threadsI.Name = "threadsI";
             this.threadsI.Size = new System.Drawing.Size(77, 24);
             this.threadsI.TabIndex = 6;
-            this.threadsI.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
+            this.threadsI.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // panel1
             // 
@@ -556,7 +542,6 @@
             this.metroPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion
@@ -586,8 +571,8 @@
         private MetroFramework.Controls.MetroCheckBox logToFileI;
         private MetroFramework.Controls.MetroLabel metroLabel2;
         private MetroFramework.Controls.MetroLabel metroLabel1;
-        private MetroFramework.Controls.MetroTextBox passwordLabel;
-        private MetroFramework.Controls.MetroTextBox userNameLabel;
+        private MetroFramework.Controls.MetroTextBox passwordLabelI;
+        private MetroFramework.Controls.MetroTextBox userNameLabelI;
     }
 }
 

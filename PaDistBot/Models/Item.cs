@@ -6,7 +6,7 @@ namespace PaDistBot.Models
     public class Item
     {
         public string Url { get; set; }
-        public  List<string> Img { get; set; }
+        public  string Img { get; set; }
         public string Upc { get; set; }
         public string Price { get; set; }
         public string RetailPrice { get; set; }

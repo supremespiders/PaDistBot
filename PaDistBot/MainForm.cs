@@ -450,7 +450,7 @@ namespace PaDistBot
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
-                var scraper = new Scraper((int)threadsI.Value);
+                var scraper = new Scraper((int)threadsI.Value,userNameLabelI.Text,passwordLabelI.Text,inputI.Text);
                 await scraper.MainWork(_cancellationTokenSource.Token);
             }
             catch (TaskCanceledException)
