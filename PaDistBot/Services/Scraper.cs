@@ -15,6 +15,7 @@ using System.Security.Policy;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
+using ExcelHelperExe;
 
 namespace PaDistBot.Services
 {
@@ -29,13 +30,15 @@ namespace PaDistBot.Services
         private string _userName; //= "alan@cameowaterwear.com";
         private string _password; //= "Parker303";
         private string _inputFile;
+        private string _outputFile;
 
-        public Scraper(int threads, string userName, string password, string inputFile)
+        public Scraper(int threads, string userName, string password, string inputFile, string outputFile)
         {
             _threads = threads;
             _userName = userName;
             _password = password;
             _inputFile = inputFile;
+            _outputFile = outputFile;
             //_client.DefaultRequestHeaders.Add("cookie","DevicePreferences=DefaultBasketGuid=dc842e6d-8461-4089-83ea-a15cd0e6c79a; __stripe_mid=64b729e8-b40d-43b4-8882-17d64f56e25d4b18ef; __stripe_sid=8e970dbb-f74a-4a9c-9572-7e74d52ac34360281a; WebLogin=Guid=ee588a0e-1586-421c-8a3c-5e23c31a854d&Salt=izG4t4WkQnCe5tGyrgZxj1LlRuBhcozy");
         }
 
@@ -156,8 +159,8 @@ namespace PaDistBot.Services
 
         private async Task MakeSureWeAreLoggedIn()
         {
-            var doc = await _client.GetHtml("dslkfns").ToDoc();
-            if (doc.DocumentNode.SelectSingleNode("klfs") == null)
+            var doc = await _client.GetHtml("https://pa-dist.com/").ToDoc();
+            if (doc.DocumentNode.SelectSingleNode("//menu-item[@class='ProfileMenu IsActive']/menu-title") == null)
             {
                 await Task.Run(Login);
                 InitClient();
@@ -178,6 +181,8 @@ namespace PaDistBot.Services
            // allUrls.Save();
             var items = await allUrls.Parallel(_threads, GetDetails); //this line to start multi tasking
             items.Save(); //this save the result items to json to persist it (not needed , later you just put to excel )
+            await items.SaveToExcel(_outputFile);
+            //var it = _outputFile.ReadFromExcel<Item>();
             Notifier.Display("Completed working");
 
         }

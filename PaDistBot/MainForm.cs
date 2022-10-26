@@ -431,7 +431,7 @@ namespace PaDistBot
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog
             {
-                Filter = @"csv file|*.csv",
+                Filter = @"xlsx file|*.xlsx",
                 Title = @"Select the output location"
             };
             saveFileDialog1.ShowDialog();
@@ -450,7 +450,7 @@ namespace PaDistBot
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
-                var scraper = new Scraper((int)threadsI.Value,userNameLabelI.Text,passwordLabelI.Text,inputI.Text);
+                var scraper = new Scraper((int)threadsI.Value,userNameLabelI.Text,passwordLabelI.Text,inputI.Text,outputI.Text);
                 await scraper.MainWork(_cancellationTokenSource.Token);
             }
             catch (TaskCanceledException)
