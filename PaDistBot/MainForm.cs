@@ -1,6 +1,11 @@
 ﻿using MetroFramework.Controls;
 using MetroFramework.Forms;
+//using Microsoft.Playwright;
 using Newtonsoft.Json;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
+using PaDistBot.Extensions;
 using PaDistBot.Models;
 using PaDistBot.Services;
 using System;
@@ -8,7 +13,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Security.Policy;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,6 +33,8 @@ namespace PaDistBot
         private int _maxConcurrency;
         private Dictionary<string, string> _config;
         private CancellationTokenSource _cancellationTokenSource;
+        //private HttpClient _httpClient;
+
 
         public MainForm()
         {
@@ -43,8 +54,106 @@ namespace PaDistBot
             Notifier.OnDisplay += OnDisplay;
             Notifier.OnLog += OnLog;
             Notifier.OnError += OnError;
-            Notifier.OnProgress += OnProgress;
+            Notifier.OnProgress += OnProgress;        
         }
+
+        //private async Task MainWork() 
+        //{
+        //    Console.WriteLine("work Start");
+        //    var cookies = await GetCookies();
+        //    var allUrlList = new List<List<string>>();
+        //    for (int i = 1; i < 126; i++)
+        //    {
+        //        Console.WriteLine("page number: " + i);
+        //        var urlList = await GetUrl(cookies, "https://pa-dist.com/sr?f=1:13530&pg=" + i + "&rpp=100&sort=8&sid=365907");
+        //        allUrlList.Add(urlList);
+                
+        //    }
+
+
+        //    foreach (var item in allUrlList)
+        //    {
+        //        foreach (var url in item)
+        //        {
+        //            Console.WriteLine(url);
+        //            using (StreamWriter writer = new StreamWriter(@"D:\urlCategorie1.txt"))
+        //            {
+        //                writer.WriteLine(url);
+        //            }
+        //        }
+        //    }
+
+
+        //    Console.WriteLine("End Work");
+        //}
+
+        //public async Task<string> GetCookies() 
+        //{
+            
+        //    _userName = userNameLabel.Text;
+        //    _password = passwordLabel.Text;
+
+        //    var chromeDriverService = ChromeDriverService.CreateDefaultService();
+        //    chromeDriverService.HideCommandPromptWindow = true;
+        //    _driver = new ChromeDriver(chromeDriverService);
+        //    _driver.Navigate().GoToUrl("https://pa-dist.com/SignIn");
+        //    var inputEmail = _driver.FindElement(By.Id("step1u"));
+        //    var inputPassword = _driver.FindElement(By.Id("step1p"));
+
+        //    inputEmail.SendKeys(_userName);
+        //    inputPassword.SendKeys(_password);
+        //    //Thread.Sleep(2000);
+        //    var submitButton = _driver.FindElement(By.XPath("//button[@type='submit']"));
+        //    submitButton.Click();
+
+        //    //Thread.Sleep(5000);
+
+        //    var cookieBiulde = new StringBuilder();
+        //    foreach (var cookie in _driver.Manage().Cookies.AllCookies)
+        //    {
+        //        cookieBiulde.Append(cookie.Name + "=" + cookie.Value + ";");
+        //    }
+        //    _driver.Quit();
+        //    cookieBiulde.Length--;
+        //    var cookies = cookieBiulde.ToString();
+        //    //Console.WriteLine("-->  " +cookies);
+        //    return cookies;
+        //}
+
+        //public async Task<List<string>> GetUrl(string cookies, string urlCategorie)
+        //{
+        //    var _urlList = new List<string>();
+        //    _httpClient = new HttpClient(new HttpClientHandler
+        //    {
+        //        UseCookies = false,
+        //        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+        //    })
+        //    {
+        //        DefaultRequestHeaders =
+        //        {
+        //            { "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36" },
+        //            { "Cookie", cookies }
+        //        }
+        //    };
+
+        //    //var doc = await _httpClient.GetHtml("https://pa-dist.com/").ToDoc();
+        //    //var html = doc.DocumentNode.SelectNodes("//div[@class='Categories']/a").Count;
+        //    //Console.WriteLine("number of categories: " +html);
+
+        //    var doc = await _httpClient.GetHtml(urlCategorie).ToDoc();
+        //    var htmlNodes = doc.DocumentNode.SelectNodes("//a[@class='ItemImgLink ']");
+        //    foreach (var item in htmlNodes)
+        //    {
+        //        var href = item.GetAttributeValue("href", "");
+        //        var itemId = Utility.BetweenStrings(href, "/Item/", "?");
+        //        //Console.WriteLine(itemId);
+        //        _urlList.Add("https://pa-dist.com/Item/" + itemId);
+        //    }
+
+        //    //Console.WriteLine("number of categories: " + htmlNodes.Count);
+
+        //    return _urlList;
+        //}
 
         private void OnProgress(object sender, (int x, int total) e)
         {
@@ -356,11 +465,27 @@ namespace PaDistBot
             {
                 ErrorLog(ex.ToString());
             }
+            //await MainWork();
         }
 
         private void stopB_Click(object sender, EventArgs e)
         {
-            _cancellationTokenSource?.Cancel();
+            //_cancellationTokenSource?.Cancel();
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        public void metroTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public void passwordLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
