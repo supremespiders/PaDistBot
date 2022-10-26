@@ -48,7 +48,7 @@ namespace PaDistBot
             Application.ThreadException += Application_ThreadException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             inputI.Text = _path + @"\input.txt";
-            outputI.Text = _path + @"\output.csv";
+            outputI.Text = _path + @"\output.xlsx";
             Directory.CreateDirectory("data");
             LoadConfig();
             Notifier.OnDisplay += OnDisplay;

@@ -21,7 +21,7 @@ namespace PaDistBot.Services
 {
     public class Scraper
     {
-        private  HttpClient _client;
+        private HttpClient _client;
         private int _idx;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly int _threads;
@@ -52,12 +52,13 @@ namespace PaDistBot.Services
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 UseCookies = false
             });
-            _client.DefaultRequestHeaders.Add("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            _client.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
             _client.DefaultRequestHeaders.Add("cookie", cookies);
         }
 
         private void Login()
         {
+            Notifier.Display($"Running headless browser to login");
             var chromeDriverService = ChromeDriverService.CreateDefaultService();
             var chromeOptions = new ChromeOptions();
             chromeDriverService.HideCommandPromptWindow = true;
@@ -75,14 +76,16 @@ namespace PaDistBot.Services
             {
                 cookieBiulde.Append(cookie.Name + "=" + cookie.Value + ";");
             }
+
             _driver.Quit();
-          File.WriteAllText("ses.txt",cookieBiulde.ToString());
+            File.WriteAllText("ses.txt", cookieBiulde.ToString());
+            Notifier.Display($"Logged in, session captured");
         }
+
         //didn't work out of the box, it needed more work, or we just use selenium for this
         async Task LoginHttpClient()
         {
-            
-            var doc =await _client.PostFormData("https://pa-dist.com/SignIn/Process/Post", new Dictionary<string, string>()
+            var doc = await _client.PostFormData("https://pa-dist.com/SignIn/Process/Post", new Dictionary<string, string>()
             {
                 { "step", "1" },
                 { "RedirectUrl", "/" },
@@ -105,7 +108,7 @@ namespace PaDistBot.Services
             var doc = await _client.GetHtml(url).ToDoc();
             var urlImgList = new List<string>();
             //var img = doc.DocumentNode.SelectSingleNode("//img[@src='https://cdn.pa-dist.com/item/v3s/328276-1']")?.GetAttributeValue("src","");
-         
+
             // if (doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img").Count > 0)
             // {
             //     foreach (var item in doc.DocumentNode.SelectNodes("//div[@class='PortraitPhotos']//img"))
@@ -137,20 +140,21 @@ namespace PaDistBot.Services
                 //Console.WriteLine(itemId);
                 urlItemsList.Add("https://pa-dist.com/Item/" + itemId);
             }
+
             return urlItemsList;
         }
 
         private async Task<List<string>> GetCategoryLinks(string categoryUrl)
         {
             Notifier.Display($"Working on category : {categoryUrl}");
-            var doc = await _client.GetHtml(categoryUrl.Replace("&rpp=200","&rpp=1")).ToDoc();
+            var doc = await _client.GetHtml(categoryUrl.Replace("&rpp=200", "&rpp=1")).ToDoc();
             var itemCountString = doc.DocumentNode.SelectSingleNode("//div[@class='ItemCounts']").InnerText
-                .GetStringBetween("of","Total Items").Replace(",","").Trim();
+                .GetStringBetween("of", "Total Items").Replace(",", "").Trim();
             var itemCount = int.Parse(itemCountString);
             var pages = itemCount / 100;
             if (itemCount % 100 != 0) pages++;
             var pageUrls = new List<string>();
-            for (int i = 1; i <= pages; i++) 
+            for (int i = 1; i <= pages; i++)
                 pageUrls.Add(categoryUrl.Replace("&rpp=200", "&rpp=100") + "&pg=" + i);
 
             var allUrls = await pageUrls.Parallel(_threads, GetUrlItems);
@@ -160,12 +164,17 @@ namespace PaDistBot.Services
         private async Task MakeSureWeAreLoggedIn()
         {
             var doc = await _client.GetHtml("https://pa-dist.com/").ToDoc();
-            if (doc.DocumentNode.SelectSingleNode("//menu-item[@class='ProfileMenu IsActive']/menu-title") == null)
+            if (doc.DocumentNode.SelectSingleNode("//menu-item[@class='ProfileMenu']/menu-title") == null)
             {
                 await Task.Run(Login);
                 InitClient();
             }
+            else
+            {
+                Notifier.Display("session still active");
+            }
         }
+
         public async Task MainWork(CancellationToken ct)
         {
             Notifier.Display("Started working");
@@ -178,13 +187,12 @@ namespace PaDistBot.Services
                 var urls = await GetCategoryLinks(input);
                 allUrls.AddRange(urls);
             }
-           // allUrls.Save();
+            allUrls.Save();
             var items = await allUrls.Parallel(_threads, GetDetails); //this line to start multi tasking
             items.Save(); //this save the result items to json to persist it (not needed , later you just put to excel )
             await items.SaveToExcel(_outputFile);
             //var it = _outputFile.ReadFromExcel<Item>();
             Notifier.Display("Completed working");
-
         }
     }
 }

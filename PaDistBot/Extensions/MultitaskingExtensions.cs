@@ -47,6 +47,7 @@ namespace PaDistBot.Extensions
                         url = s;
                     else
                         url = getter(item);
+                    Notifier.Progress(i+1,inputs.Count);
                     Notifier.Display($"Working on {i + 1} / {inputs.Count} , Total collected : {outputs.Count}");
                     var t = work(item);
                     taskUrls.Add(t.Id, url);
@@ -113,6 +114,8 @@ namespace PaDistBot.Extensions
                         url = s;
                     else
                         url = getter(item);
+                    
+                    Notifier.Progress(i+1,inputs.Count);
                     Notifier.Display($"Working on {i + 1} / {inputs.Count} , Total collected : {outputs.Count}");
                     var t = work(item);
                     taskUrls.Add(t.Id, url);
